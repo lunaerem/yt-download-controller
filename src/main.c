@@ -1,3 +1,4 @@
+#include "fio.h"
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -39,24 +40,27 @@ int main(int argc, char *argv[]) {
   char *list4[4] = {"python3", "yt-dlp", "-U", NULL};
 
   // Checking if yt-dlp is installed
-  if (access("yt-dlp", F_OK) != 0) {
-    if (errno != ENOENT) {
-      perror("Unknown error");
-    } else {
-      fprintf(stderr,
-              "Failed to find yt-dlp. Please ensure it is installed and "
-              "in the current directory.\n");
-    }
+  switch (fcheck("yt-dlp")) {
+  case -1:
+    perror("Unknown error");
     return -1;
+    break;
+  case -2:
+    fprintf(stderr, "Failed to find yt-dlp. Please ensure it is installed and "
+                    "in the current directory.\n");
+    return -1;
+    break;
+  default:
+    break;
   }
 
   // Checking if a list.txt exists and prompting if not
-  if (access("list.txt", F_OK) != 0) {
-    if (errno != ENOENT) {
-      perror("Unknown error");
-      return -1;
-    }
-
+  switch (fcheck("list.txt")) {
+  case -1:
+    perror("Unknown error");
+    return -1;
+    break;
+  case -2:
     fprintf(stderr, "No list.txt found.\n");
     printf("Would you like one to be created? (y/n) ");
     char selection;
@@ -73,6 +77,9 @@ int main(int argc, char *argv[]) {
       fclose(fp);
     }
     return 0;
+    break;
+  default:
+    break;
   }
 
   printf("\e[1;1H\e[2J");
