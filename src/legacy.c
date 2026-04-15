@@ -1,9 +1,13 @@
+// Code for the legacy UI system
+// Will be deprecated in the future
+
+#include "legacy.h"
 #include "fio.h"
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[]) {
+int legacyui() {
 
   // Declaring and initialising commands
   // This will get cleaned up once things are rewritten for custom options

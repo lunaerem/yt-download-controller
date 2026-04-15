@@ -1,13 +1,16 @@
-all: controller
+all: direct-dlp
 
-controller: main.o fio.o
-	gcc main.o fio.o -o controller
+direct-dlp: cli.o legacy.o fio.o
+	gcc cli.o legacy.o fio.o -o direct-dlp
 
-main.o: ./src/main.c ./src/fio.h 
-	gcc -Wall -Werror ./src/main.c -c
+cli.o: ./src/cli.c ./src/legacy.h ./src/fio.h 
+	gcc -Wall -Werror ./src/cli.c -c
 
 fio.o: ./src/fio.c ./src/fio.h
 	gcc -Wall -Werror ./src/fio.c -c
 
+legacy.o: ./src/legacy.c ./src/legacy.h
+	gcc -Wall -Werror ./src/legacy.c -c
+
 clean:
-	rm -f controller *.o
+	rm -f direct-dlp *.o
