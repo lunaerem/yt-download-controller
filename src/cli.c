@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define VERSION "0.0.1"
+#define VERSION "0.1.0"
 
 int main(int argc, char *argv[]) {
 

@@ -1,16 +1,48 @@
-all: direct-dlp
+CC = gcc
+CFLAGS = -Wall -Werror
+EXE = direct-dlp
 
-direct-dlp: cli.o legacy.o fio.o
-	gcc cli.o legacy.o fio.o -o direct-dlp
+SRC = $(wildcard src/*.c)
+OBJ = $(SRC:%.c=%.o)
+DEP = $(OBJ:%.o=%.d)
 
-cli.o: ./src/cli.c ./src/legacy.h ./src/fio.h 
-	gcc -Wall -Werror ./src/cli.c -c
+LIBS = $(addprefix -l,)
 
-fio.o: ./src/fio.c ./src/fio.h
-	gcc -Wall -Werror ./src/fio.c -c
+PREFIX = /usr/local
 
-legacy.o: ./src/legacy.c ./src/legacy.h
-	gcc -Wall -Werror ./src/legacy.c -c
+.PHONY: all
+all: debug
 
+.PHONY: debug
+debug: CFLAGS += -g
+debug: $(EXE)
+
+.PHONY: remake
+remake: clean debug
+.NOTPARALLEL: remake
+
+.PHONY: release
+release: CFLAGS += -O3 -DNDEBUG
+release: clean $(EXE)
+.NOTPARALLEL: release
+
+.PHONY: clean
 clean:
-	rm -f direct-dlp *.o
+	@rm -f $(OBJ) $(DEP) $(EXE)
+
+.PHONY: install
+install: all
+	@install $(EXE) $(PREFIX)/bin
+
+.PHONY: uninstall
+uninstall:
+	@-rm $(PREFIX)/bin/$(EXE)
+
+$(EXE): $(OBJ)
+	@$(CC) -o $@ $^ $(LIBS)
+
+-include $(DEP)
+
+%.o: %.c
+	@echo Compiling $<...
+	@$(CC) $(CFLAGS) -c -o $@ $<
